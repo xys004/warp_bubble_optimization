@@ -1,0 +1,22 @@
+﻿cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "warp_optimization"
+type: software
+abstract: >-
+  TensorFlow-based constrained optimization, post-processing, and output
+  verification pipeline for principal-stress diagnostics of uniformly
+  translated warp-drive shell seed configurations.
+authors:
+  - family-names: "<FAMILY_NAME>"
+    given-names: "<GIVEN_NAME>"
+license: "Apache-2.0"
+repository-code: "<REPOSITORY_URL>"
+doi: "<DOI>"
+version: "<RELEASE_VERSION>"
+date-released: "<RELEASE_DATE>"
+keywords:
+  - general relativity
+  - warp drive
+  - energy conditions
+  - tensorflow
+  - scientific computing

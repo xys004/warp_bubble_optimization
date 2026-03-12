@@ -1,0 +1,25 @@
+﻿__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+venv/
+runs/
+
+# Generated run bundles
+domain_*_final_params.csv
+domain_*_parameters.csv
+domain_*_losses.csv
+domain_*_success_rates.csv
+domain_*_metadata.json
+domain_*_final_report.txt
+domain_*_XY_*.png
+domain_*_XZ_*.png
+domain_*_loss_components.png
+domain_*_success_fractions.png
+domain_*_params.png
+domain_*_parameter_evolution.png
+
+# OS/editor files
+.DS_Store
+Thumbs.db
