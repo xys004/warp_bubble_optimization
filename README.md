@@ -65,11 +65,10 @@ https://github.com/xys004/warp_bubble_optimization.git
 The included notebook `colab_smoke_test.ipynb` is the easiest cloud workflow.
 
 1. Open `colab_smoke_test.ipynb` from the GitHub repository in Google Colab.
-2. Because the repository is private, paste a GitHub token into the `GITHUB_TOKEN` variable in the first code cell.
-3. Run the notebook cells to clone the repo, install dependencies, generate a reduced smoke-test bundle, and verify the outputs.
-4. If the smoke test passes, rerun `generate_run_bundle.py` from Colab with larger `--epochs`, `--n-xyz`, and pretraining settings.
+2. Run the notebook cells to clone the repo, install dependencies, generate a reduced smoke-test bundle, and verify the outputs.
+3. If the smoke test passes, rerun `generate_run_bundle.py` from Colab with larger `--epochs`, `--n-xyz`, and pretraining settings.
 
-If you prefer not to store a token in the notebook, you can also clone interactively in a Colab terminal/session or make the repository public later for easier notebook launching.
+Because the repository is public, the notebook can clone it directly without embedding a GitHub token.
 
 ## Run a Single Optimization
 
