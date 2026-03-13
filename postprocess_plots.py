@@ -199,7 +199,7 @@ def validate_run(run):
     if not xyz_max > xyz_min:
         raise ValueError("metadata.json must satisfy xyz_range[1] > xyz_range[0]")
 
-    n_xyz = int(metadata["N_xyz"])
+    n_xyz = int(trainer.N_xyz)
     if n_xyz < 2:
         raise ValueError("metadata.json must satisfy N_xyz >= 2")
 
@@ -251,7 +251,7 @@ def load_run(base):
     return run
 
 
-def _build_trainer(metadata):
+def _build_trainer(metadata, diagnostic_n_xyz=None):
     from einstein_optimizer import CONFIG, EinsteinTrainerCPU
 
     alpha_cfg = metadata.get("alpha_settings", {})
@@ -265,7 +265,7 @@ def _build_trainer(metadata):
     effective_v_mode = "constant" if v_mode == "constant" else v_mode
 
     trainer = EinsteinTrainerCPU(
-        N_xyz=int(metadata["N_xyz"]),
+        N_xyz=int(diagnostic_n_xyz if diagnostic_n_xyz is not None else metadata["N_xyz"]),
         N_t=1,
         xyz_range=tuple(metadata["xyz_range"]),
         t_range=(float(metadata["time"]), float(metadata["time"])),
@@ -291,10 +291,10 @@ def _as_3d(values, n_xyz):
     return np.asarray(values, dtype=float).reshape((n_xyz, n_xyz, n_xyz))
 
 
-def compute_maps(run, interface_buffer=0.0):
+def compute_maps(run, interface_buffer=0.0, diagnostic_n_xyz=None):
     metadata = run["metadata"]
     params = run["final_params"]
-    trainer = _build_trainer(metadata)
+    trainer = _build_trainer(metadata, diagnostic_n_xyz=diagnostic_n_xyz)
     trainer.create_variables(
         A_init=float(params["A"]),
         B_init=float(params["B"]),
@@ -319,7 +319,7 @@ def compute_maps(run, interface_buffer=0.0):
     )
     hard_mask_tf, _, _ = trainer.hard_masks(r, A, B, R0)
 
-    n_xyz = int(metadata["N_xyz"])
+    n_xyz = int(trainer.N_xyz)
     x_vals = np.asarray(trainer.x_vals.numpy(), dtype=float)
     y_vals = np.asarray(trainer.y_vals.numpy(), dtype=float)
     z_vals = np.asarray(trainer.z_vals.numpy(), dtype=float)
@@ -599,6 +599,12 @@ def main():
         default=0.0,
         help="Optional radial buffer removed from each shell boundary before plotting",
     )
+    parser.add_argument(
+        "--diagnostic-nxyz",
+        type=int,
+        default=None,
+        help="Optional diagnostic grid size for post-processing only. Use this to recompute smoother field maps from the final parameters without rerunning the optimizer.",
+    )
     args = parser.parse_args()
 
     configure_style()
@@ -608,7 +614,11 @@ def main():
     outdir = Path(args.outdir) if args.outdir else run["root"]
     outdir.mkdir(parents=True, exist_ok=True)
 
-    maps = compute_maps(run, interface_buffer=float(args.interface_buffer))
+    maps = compute_maps(
+        run,
+        interface_buffer=float(args.interface_buffer),
+        diagnostic_n_xyz=args.diagnostic_nxyz,
+    )
     base_name = run["base_name"]
     field_base_name = field_plot_base(
         base_name=base_name,

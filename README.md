@@ -140,6 +140,9 @@ Optional arguments include:
 - `--map-size <width> <height>`
 - `--line-size <width> <height>`
 - `--interface-buffer <float>`
+- `--diagnostic-nxyz <int>`
+
+`--diagnostic-nxyz` is especially useful when the optimizer had to run on a coarse grid for memory reasons. It keeps the optimized parameters fixed and recomputes the diagnostic maps on a finer post-processing grid, which makes the exported PNG figures much smoother without claiming a different optimization result.
 
 The plotting pipeline reconstructs the field maps from the final optimized parameters using the same principal-stress eigenvalue diagnostics as the optimizer and the exported success-rate tables, via the shared helper module `physics_core.py`.
 
