@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Sequence
 
 import numpy as np
+from output_naming import expected_plot_paths
 
 REQUIRED_INPUT_SUFFIXES = (
     "final_params.csv",
@@ -14,22 +15,6 @@ REQUIRED_INPUT_SUFFIXES = (
     "losses.csv",
     "success_rates.csv",
     "metadata.json",
-)
-
-REQUIRED_PLOT_SUFFIXES = (
-    "XY_rho.png",
-    "XY_WECmin.png",
-    "XY_NECmin.png",
-    "XY_DECmargin.png",
-    "XY_SEC.png",
-    "XZ_rho.png",
-    "XZ_WECmin.png",
-    "XZ_NECmin.png",
-    "XZ_DECmargin.png",
-    "XZ_SEC.png",
-    "loss_components.png",
-    "success_fractions.png",
-    "params.png",
 )
 
 EXPECTED_HEADERS = {
@@ -82,7 +67,6 @@ def _build_paths(base: Path) -> Dict[str, Path]:
         "losses": root / f"{stem}_losses.csv",
         "success_rates": root / f"{stem}_success_rates.csv",
         "metadata": root / f"{stem}_metadata.json",
-        "plots": [root / f"{stem}_{suffix}" for suffix in REQUIRED_PLOT_SUFFIXES],
     }
 
 
@@ -268,6 +252,8 @@ def verify(base: str, tol: float = 1e-5) -> VerificationResult:
         errors=errors,
         warnings=warnings,
     )
+    final_param_map = _row_as_float_map(final_rows[0]) if final_rows else {}
+    paths["plots"] = expected_plot_paths(paths["root"], base_path.name, final_param_map, domain_type)
     _check_plot_files(paths, errors, notes)
     _check_timestamps(paths, notes, warnings)
 

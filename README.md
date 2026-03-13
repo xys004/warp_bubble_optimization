@@ -62,13 +62,18 @@ This repository is published at:
 https://github.com/xys004/warp_bubble_optimization.git
 ```
 
-The included notebook `colab_smoke_test.ipynb` is the easiest cloud workflow.
+The repository includes two Colab notebooks:
+
+- `colab_smoke_test.ipynb`: reduced smoke test for installation and bundle verification
+- `colab_paper_run.ipynb`: heavier single-run workflow with GPU check, bundle verification, and manuscript-parameter comparison
+
+Recommended workflow:
 
 1. Open `colab_smoke_test.ipynb` from the GitHub repository in Google Colab.
-2. Run the notebook cells to clone the repo, install dependencies, generate a reduced smoke-test bundle, and verify the outputs.
-3. If the smoke test passes, rerun `generate_run_bundle.py` from Colab with larger `--epochs`, `--n-xyz`, and pretraining settings.
+2. Run the smoke test to confirm the environment, TensorFlow install, and plotting pipeline.
+3. Then open `colab_paper_run.ipynb` for a longer run with paper-style settings.
 
-Because the repository is public, the notebook can clone it directly without embedding a GitHub token.
+Because the repository is public, both notebooks can clone it directly without embedding a GitHub token.
 
 ## Run a Single Optimization
 
@@ -144,6 +149,14 @@ To validate a completed run bundle and the expected plot set:
 python verify_outputs.py --base domain_2_v_0p1_t_30p0
 ```
 
+To compare the final parameters against the manuscript targets for the published `t=30.0`, `v=0.1` cases:
+
+```bash
+python compare_to_manuscript.py --base domain_2_v_0p1_t_30p0 --atol 0.10 --rtol 0.10
+```
+
+This prints the final `A`, `B`, and `R0` against the manuscript targets when those targets are defined. Use `--strict` if you want a nonzero exit code when the bundle lands outside tolerance.
+
 The verifier checks:
 
 - required run artifacts exist
@@ -175,19 +188,34 @@ The post-processing filenames map directly onto the manuscript figure groups.
 
 ### Single-shell configuration (`domain_1_v_0p1_t_30p0`)
 
-- Figure 1: `*_XY_rho.png`, `*_XY_WECmin.png`, `*_XY_NECmin.png`
-- Figure 2: `*_XY_DECmargin.png`, `*_XY_SEC.png`
-- Figure 3: `*_XZ_rho.png`, `*_XZ_WECmin.png`, `*_XZ_NECmin.png`
-- Figure 4: `*_XZ_DECmargin.png`, `*_XZ_SEC.png`
+- Figure 1: `domain_1_v_0p1_t_30p0_a..._b..._R0..._XY_rho.png`, `..._XY_WECmin.png`, `..._XY_NECmin.png`
+- Figure 2: `domain_1_v_0p1_t_30p0_a..._b..._R0..._XY_DECmargin.png`, `..._XY_SEC.png`
+- Figure 3: `domain_1_v_0p1_t_30p0_a..._b..._R0..._XZ_rho.png`, `..._XZ_WECmin.png`, `..._XZ_NECmin.png`
+- Figure 4: `domain_1_v_0p1_t_30p0_a..._b..._R0..._XZ_DECmargin.png`, `..._XZ_SEC.png`
 - Figure 9 panels: `*_loss_components.png`, `*_success_fractions.png`, `*_params.png`
 
 ### Double-shell configuration (`domain_2_v_0p1_t_30p0`)
 
-- Figure 5: `*_XY_rho.png`, `*_XY_WECmin.png`, `*_XY_NECmin.png`
-- Figure 6: `*_XY_DECmargin.png`, `*_XY_SEC.png`
-- Figure 7: `*_XZ_rho.png`, `*_XZ_WECmin.png`, `*_XZ_NECmin.png`
-- Figure 8: `*_XZ_DECmargin.png`, `*_XZ_SEC.png`
+- Figure 5: `domain_2_v_0p1_t_30p0_a..._b..._R0..._XY_rho.png`, `..._XY_WECmin.png`, `..._XY_NECmin.png`
+- Figure 6: `domain_2_v_0p1_t_30p0_a..._b..._R0..._XY_DECmargin.png`, `..._XY_SEC.png`
+- Figure 7: `domain_2_v_0p1_t_30p0_a..._b..._R0..._XZ_rho.png`, `..._XZ_WECmin.png`, `..._XZ_NECmin.png`
+- Figure 8: `domain_2_v_0p1_t_30p0_a..._b..._R0..._XZ_DECmargin.png`, `..._XZ_SEC.png`
 - Figure 10 panels: `*_loss_components.png`, `*_success_fractions.png`, `*_params.png`
+
+Field-map filenames follow the manuscript naming convention from the LaTeX source:
+
+- `<base>_a{A}_b{B}_R0{R0}_XY_rho.png`
+- `<base>_a{A}_b{B}_R0{R0}_XY_WECmin.png`
+- `<base>_a{A}_b{B}_R0{R0}_XY_NECmin.png`
+- `<base>_a{A}_b{B}_R0{R0}_XY_DECmargin.png`
+- `<base>_a{A}_b{B}_R0{R0}_XY_SEC.png`
+- `<base>_a{A}_b{B}_R0{R0}_XZ_rho.png`
+- `<base>_a{A}_b{B}_R0{R0}_XZ_WECmin.png`
+- `<base>_a{A}_b{B}_R0{R0}_XZ_NECmin.png`
+- `<base>_a{A}_b{B}_R0{R0}_XZ_DECmargin.png`
+- `<base>_a{A}_b{B}_R0{R0}_XZ_SEC.png`
+
+For domain 1, the export still includes `R0...` with `R0=0.000` so the filenames remain consistent with the paper's LaTeX includes.
 
 All field-map filenames use the revised manuscript language:
 

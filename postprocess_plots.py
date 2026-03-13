@@ -11,6 +11,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import TwoSlopeNorm
+from output_naming import field_plot_base
 
 
 FIELD_EXPORTS = {
@@ -609,6 +610,11 @@ def main():
 
     maps = compute_maps(run, interface_buffer=float(args.interface_buffer))
     base_name = run["base_name"]
+    field_base_name = field_plot_base(
+        base_name=base_name,
+        final_params=run["final_params"],
+        domain_type=int(run["metadata"]["domain_type"]),
+    )
 
     for plane in planes:
         for field_name, spec in FIELD_EXPORTS.items():
@@ -619,7 +625,7 @@ def main():
                 maps["y"],
                 maps["z"],
             )
-            output_path = outdir / f"{base_name}_{plane}_{spec['filename']}.png"
+            output_path = outdir / f"{field_base_name}_{plane}_{spec['filename']}.png"
             plot_map(
                 data=plane_data,
                 axis_x=axis_x,
