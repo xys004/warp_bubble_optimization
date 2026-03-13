@@ -75,6 +75,8 @@ Recommended workflow:
 
 Because the repository is public, both notebooks can clone it directly without embedding a GitHub token.
 
+If `verify_outputs.py` reports missing `*_final_params.csv`, `*_parameters.csv`, `*_losses.csv`, `*_success_rates.csv`, or `*_metadata.json`, that usually means the generation step failed or the runtime was reset before the bundle was written. The updated Colab notebooks now stop immediately when `generate_run_bundle.py` fails and print the files that were actually created.
+
 ## Run a Single Optimization
 
 To run one optimization snapshot and export the raw run bundle:
