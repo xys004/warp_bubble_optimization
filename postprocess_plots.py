@@ -291,6 +291,103 @@ def _as_3d(values, n_xyz):
     return np.asarray(values, dtype=float).reshape((n_xyz, n_xyz, n_xyz))
 
 
+def _sample_plane_axes(metadata, plane, plane_n=None):
+    xyz_min, xyz_max = [float(v) for v in metadata["xyz_range"]]
+    n = int(plane_n if plane_n is not None else metadata["N_xyz"])
+    axis = np.linspace(xyz_min, xyz_max, n, dtype=float)
+    plane = plane.upper()
+    if plane == "XY":
+        X, Y = np.meshgrid(axis, axis, indexing="ij")
+        Z = np.zeros_like(X)
+        return axis, axis, X, Y, Z, "x", "y"
+    if plane == "XZ":
+        X, Z = np.meshgrid(axis, axis, indexing="ij")
+        Y = np.zeros_like(X)
+        return axis, axis, X, Y, Z, "x", "z"
+    raise ValueError(f"Unsupported plane '{plane}'. Use one of {PLANE_NAMES}.")
+
+
+def compute_plane_map(run, plane, interface_buffer=0.0, plane_n=None):
+    metadata = run["metadata"]
+    params = run["final_params"]
+    trainer = _build_trainer(metadata, diagnostic_n_xyz=plane_n)
+    trainer.create_variables(
+        A_init=float(params["A"]),
+        B_init=float(params["B"]),
+        R0_init=float(params["R0"]) if np.isfinite(params.get("R0", np.nan)) else 1.0,
+    )
+    trainer.set_from_values(
+        A_val=float(params["A"]),
+        B_val=float(params["B"]),
+        R0_val=float(params["R0"]) if np.isfinite(params.get("R0", np.nan)) else None,
+    )
+
+    A, B, R0 = trainer.get_ABR()
+    axis_x, axis_y, X, Y, Z, xlabel, ylabel = _sample_plane_axes(metadata, plane, plane_n=plane_n)
+    T = np.full_like(X, float(metadata["time"]), dtype=float)
+
+    rho, Px, Py, Pz, Txy, Txz, Tyz, r = trainer.compute_components_on_coords(
+        X.reshape(-1),
+        Y.reshape(-1),
+        Z.reshape(-1),
+        T.reshape(-1),
+        A,
+        B,
+        R0,
+    )
+
+    from physics_core import principal_stress_margins
+
+    nec_margin, wec_margin, dec_margin, sec_margin = principal_stress_margins(
+        rho, Px, Py, Pz, Txy, Txz, Tyz
+    )
+    hard_mask_tf, _, _ = trainer.hard_masks(r, A, B, R0)
+
+    n = len(axis_x)
+    r_2d = np.asarray(r.numpy(), dtype=float).reshape((n, n))
+    valid_mask = np.asarray(hard_mask_tf.numpy(), dtype=bool).reshape((n, n))
+
+    r_inner = float(R0.numpy()) if int(metadata["domain_type"]) == 2 else float((2.0 / B).numpy())
+    r_outer = float((2.0 / B).numpy()) if int(metadata["domain_type"]) == 2 else float(trainer.r_cap.numpy())
+    if interface_buffer > 0.0:
+        valid_mask &= r_2d >= (r_inner + interface_buffer)
+        valid_mask &= r_2d <= (r_outer - interface_buffer)
+
+    raw_fields = {
+        "rho": np.asarray(rho.numpy(), dtype=float).reshape((n, n)),
+        "WEC_min": np.asarray(wec_margin.numpy(), dtype=float).reshape((n, n)),
+        "NEC_min": np.asarray(nec_margin.numpy(), dtype=float).reshape((n, n)),
+        "DEC_margin": np.asarray(dec_margin.numpy(), dtype=float).reshape((n, n)),
+        "SEC": np.asarray(sec_margin.numpy(), dtype=float).reshape((n, n)),
+    }
+
+    finite_mask = np.ones_like(valid_mask, dtype=bool)
+    for values in raw_fields.values():
+        finite_mask &= np.isfinite(values)
+    valid_mask &= finite_mask
+
+    masked_fields = {
+        name: np.where(valid_mask, values, np.nan) for name, values in raw_fields.items()
+    }
+
+    return {
+        "plane": plane.upper(),
+        "axis_x": axis_x,
+        "axis_y": axis_y,
+        "xlabel": xlabel,
+        "ylabel": ylabel,
+        "fields": masked_fields,
+        "parameters": {
+            "A": float(A.numpy()),
+            "B": float(B.numpy()),
+            "R0": None if R0 is None else float(R0.numpy()),
+            "alpha": float(params.get("alpha", np.nan)),
+            "r_inner": r_inner,
+            "r_outer": r_outer,
+        },
+    }
+
+
 def compute_maps(run, interface_buffer=0.0, diagnostic_n_xyz=None):
     metadata = run["metadata"]
     params = run["final_params"]
@@ -611,7 +708,7 @@ def main():
         "--diagnostic-nxyz",
         type=int,
         default=None,
-        help="Optional diagnostic grid size for post-processing only. Use this to recompute smoother field maps from the final parameters without rerunning the optimizer.",
+        help="Optional plane sampling density for post-processing only. Use this to recompute smoother XY/XZ diagnostic maps from the final parameters without rerunning the optimizer.",
     )
     parser.add_argument(
         "--xlim",
@@ -644,11 +741,6 @@ def main():
     outdir = Path(args.outdir) if args.outdir else run["root"]
     outdir.mkdir(parents=True, exist_ok=True)
 
-    maps = compute_maps(
-        run,
-        interface_buffer=float(args.interface_buffer),
-        diagnostic_n_xyz=args.diagnostic_nxyz,
-    )
     base_name = run["base_name"]
     field_base_name = field_plot_base(
         base_name=base_name,
@@ -657,21 +749,20 @@ def main():
     )
 
     for plane in planes:
+        plane_map = compute_plane_map(
+            run,
+            plane=plane,
+            interface_buffer=float(args.interface_buffer),
+            plane_n=args.diagnostic_nxyz,
+        )
         for field_name, spec in FIELD_EXPORTS.items():
-            plane_data, axis_x, axis_y, xlabel, ylabel = _extract_plane(
-                maps["fields"][field_name],
-                plane,
-                maps["x"],
-                maps["y"],
-                maps["z"],
-            )
             output_path = outdir / f"{field_base_name}_{plane}_{spec['filename']}.png"
             plot_map(
-                data=plane_data,
-                axis_x=axis_x,
-                axis_y=axis_y,
-                xlabel=xlabel,
-                ylabel=ylabel,
+                data=plane_map["fields"][field_name],
+                axis_x=plane_map["axis_x"],
+                axis_y=plane_map["axis_y"],
+                xlabel=plane_map["xlabel"],
+                ylabel=plane_map["ylabel"],
                 title=f"{spec['title']} ({plane})",
                 output_path=output_path,
                 with_colorbar=args.with_colorbar,

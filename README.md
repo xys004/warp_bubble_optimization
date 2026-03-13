@@ -145,7 +145,7 @@ Optional arguments include:
 - `--ylim <ymin> <ymax>`
 - `--interpolation nearest|bilinear|bicubic`
 
-`--diagnostic-nxyz` is especially useful when the optimizer had to run on a coarse grid for memory reasons. It keeps the optimized parameters fixed and recomputes the diagnostic maps on a finer post-processing grid, which makes the exported PNG figures much smoother without claiming a different optimization result.
+`--diagnostic-nxyz` is especially useful when the optimizer had to run on a coarse grid for memory reasons. It keeps the optimized parameters fixed and recomputes the XY/XZ diagnostics on finer direct plane samplings, which is much closer to the old Mathematica workflow than slicing a coarse 3D cube. This makes the exported PNG figures much smoother without claiming a different optimization result.
 
 `--xlim` and `--ylim` let you zoom to the physically relevant shell region, which is often far more informative than plotting the full `[-6, 6]` box. `--interpolation bilinear` can make display smoother in notebooks, but it only changes rendering, not the underlying diagnostic values.
 

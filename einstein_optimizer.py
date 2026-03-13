@@ -318,11 +318,11 @@ class EinsteinTrainerCPU:
         return b0, b1, b2
 
     @tf.function
-    def compute_components(self, A, B, R0):
-        X = self.X
-        Y = self.Y
-        Z = self.Z
-        T = self.T
+    def compute_components_on_coords(self, X, Y, Z, T, A, B, R0):
+        X = tf.reshape(tf.cast(X, tf.float32), [-1])
+        Y = tf.reshape(tf.cast(Y, tf.float32), [-1])
+        Z = tf.reshape(tf.cast(Z, tf.float32), [-1])
+        T = tf.reshape(tf.cast(T, tf.float32), [-1])
         r = self.r_geom(X, Y, Z)
         b0, b1, b2 = self.beta_and_derivs(r, A, B, R0)
         v = self.V(T)
@@ -411,6 +411,10 @@ class EinsteinTrainerCPU:
         Txz = Gxz * factor
         Tyz = Gyz * factor
         return rho, Px, Py, Pz, Txy, Txz, Tyz, r
+
+    @tf.function
+    def compute_components(self, A, B, R0):
+        return self.compute_components_on_coords(self.X, self.Y, self.Z, self.T, A, B, R0)
 
     @tf.function
     def assemble_P_eigs(self, Px, Py, Pz, Txy, Txz, Tyz):
