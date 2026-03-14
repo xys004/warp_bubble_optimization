@@ -212,6 +212,25 @@ For faster smoke tests in a limited environment, reduce the optimizer settings e
 python generate_run_bundle.py --domain 2 --v 0.1 --t 30.0 --overwrite --epochs 10 --n-xyz 12 --pretrain-trials 0
 ```
 
+## Phase B Golden Dataset
+
+The repository now includes a dedicated Phase B manifest for the small
+referee-facing dataset that should be regenerated first:
+
+- `core`: the single-shell and double-shell `t=30.0` reference bundles
+- `time_audit`: optional `t=0.2` paired runs with the same seeds as the `t=30.0`
+  cases, used to audit constant-velocity time-label handling
+- `all`: both groups
+
+Generate the core dataset with:
+
+```bash
+python run_golden_dataset.py --group core --outdir golden_dataset --overwrite
+```
+
+The case definitions live in `golden_dataset_cases.py`, and the workflow note is
+documented in `docs/phase_b_golden_dataset.md`.
+
 ## Paper Figure Mapping
 
 The post-processing filenames map directly onto the manuscript figure groups.
