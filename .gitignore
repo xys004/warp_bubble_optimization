@@ -48,3 +48,16 @@ docs/*
 !golden_dataset/**
 !manuscript_target_bundles/
 !manuscript_target_bundles/**
+
+# LaTeX build scratch
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+
+
+# Compile package figure assets
+!submission_package_v0p1p0/figures/
+!submission_package_v0p1p0/figures/**
