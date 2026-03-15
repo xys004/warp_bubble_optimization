@@ -1,0 +1,153 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+
+\title{Manuscript Revision Map}
+\author{}
+\date{March 15, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Purpose}
+This document records the most important wording changes made between the earlier manuscript
+version and the current revised file \texttt{warpdrive\_clean\_submission.tex}. The goal is to make
+the editorial logic explicit: what the earlier wording suggested, what the revised wording now says,
+and why the change was necessary after auditing the regenerated evidence.
+
+The changes summarized here are grounded in the cleaned optimization pipeline and in the associated
+audit notes:
+\begin{itemize}
+\item regenerated optimized bundles for the single-shell and double-shell cases,
+\item direct evaluations of the manuscript target parameters under the same cleaned pipeline,
+\item the synthesis note \texttt{phase\_c\_synthesis.md}.
+\end{itemize}
+
+\section*{How to Read This Map}
+Each entry below is organized into three parts:
+\begin{itemize}
+\item \textbf{Earlier emphasis}: what the pre-revision manuscript effectively claimed,
+\item \textbf{Revised emphasis}: what the new manuscript now states,
+\item \textbf{Reason for change}: why the earlier wording was too strong or too specific.
+\end{itemize}
+
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{p{0.17\textwidth} p{0.24\textwidth} p{0.24\textwidth} p{0.27\textwidth}}
+\toprule
+\textbf{Section} & \textbf{Earlier Emphasis} & \textbf{Revised Emphasis} & \textbf{Reason for Change} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Section} & \textbf{Earlier Emphasis} & \textbf{Revised Emphasis} & \textbf{Reason for Change} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+Abstract &
+The abstract leaned toward the idea that WEC/NEC were close to saturation and that the
+SEC was effectively positive on the sampled slices. &
+The abstract now states a hierarchy of residual constraints: $\rho$ remains non-negative by
+construction, the DEC is the tightest residual condition, and the SEC is easier than the
+DEC only in aggregate. &
+The regenerated bundles and the manuscript-target evaluations both show that WEC/NEC remain
+substantially constrained, while the SEC is not uniformly positive on the sampled slices. \\[0.2cm]
+
+Introduction &
+The introduction risked sounding like the optimization strongly rehabilitated the classical
+energy conditions. &
+The introduction now presents the method as a \emph{physics-penalized parametric optimization}
+over an analytic ansatz, with no claim of full energy-condition recovery. &
+This phrasing matches what the code actually does and avoids overselling the numerical workflow as
+either a PINN or a proof of global energy-condition satisfaction. \\[0.2cm]
+
+Single-shell discussion &
+The earlier single-shell discussion suggested that WEC/NEC become nearly saturated and that the
+remaining obstruction is mostly DEC-only. &
+The revised text says that DEC remains the strongest residual obstruction, but WEC/NEC are
+still substantially constrained and the SEC is mixed on the sampled slices. &
+Both the optimized single-shell bundle and the direct evaluation of the manuscript parameters show
+only moderate WEC/NEC success fractions, not a near-saturation regime. \\[0.2cm]
+
+Double-shell discussion &
+The earlier double-shell discussion emphasized localized deficits near the inner interface but
+still gave the impression that the condition hierarchy was visually cleaner than it really is. &
+The revised discussion keeps the qualitative localization story while making clear that the
+double-shell case remains more constrained and that the SEC is not uniformly positive. &
+The regenerated double-shell bundle still supports the geometric interpretation, but the cleaned
+diagnostics do not justify claiming that the softer conditions are visibly or numerically close to
+full satisfaction. \\[0.2cm]
+
+SEC slice captions &
+The earlier captions for the meridional SEC figures read as though positivity on the shown slices
+had effectively been established. &
+The revised captions say that the SEC is comparatively milder than the DEC in aggregate but
+can still show mixed-sign structure on sampled slices. &
+This was one of the most important corrections because the regenerated evidence does not support a
+uniformly positive slice interpretation. \\[0.2cm]
+
+Optimization curves &
+The earlier captions and discussion described a strong drop in the physics loss followed by a clean
+plateau and an initial transient in the parameters. &
+The revised text describes the visible main run more carefully: pretraining places the optimization
+near a stable basin, the late-time total loss is dominated by the inverse-alpha term, and the
+main parameters remain in narrow bands. &
+This is closer to what the regenerated runs show. The earlier wording read too much dynamical
+story into curves whose visible main phase is already close to a plateau. \\[0.2cm]
+
+Success-fraction captions &
+The earlier wording implied a large numerical gap between NEC/WEC and DEC. &
+The revised wording avoids calling the fractions ``high'' and instead states that the curves settle
+into topology-dependent plateaus, with DEC remaining the tightest residual test. &
+The cleaned runs still support DEC as the dominant obstruction, but not the stronger claim that
+NEC/WEC enter an obviously high-success regime. \\[0.2cm]
+
+Conclusion &
+The earlier conclusion could be read as a stronger endorsement of the standard energy conditions
+than the new evidence warrants. &
+The revised conclusion focuses on the limited but defensible result: the surviving deficits are
+stress-dominated, localized, and structured by topology, with DEC as the hardest residual test. &
+This lets the paper keep its main constructive result while staying aligned with the regenerated
+bundles and the direct paper-parameter evaluations. \\
+
+\end{longtable}
+
+\section*{Preserved Claims}
+The revision does not overturn the core analytic structure of the paper. The following claims were
+preserved and are still supported by the cleaned workflow:
+\begin{itemize}
+\item the construction should be described as a constrained or penalized optimization over a
+low-dimensional analytic ansatz,
+\item the seed is organized so that $\rho \ge 0$ is retained under the restricted uniform,
+time-independent translations considered here,
+\item the dominant residual obstruction is stress-sector dominated, with the DEC typically the
+tightest of the sampled conditions,
+\item topology matters: the double-shell case is more constrained and redistributes curvature more
+subtly than the single-shell case.
+\end{itemize}
+
+\section*{Softened Claims}
+The following claims were explicitly weakened because the regenerated evidence does not support the
+stronger wording:
+\begin{itemize}
+\item ``high'' WEC/NEC success fractions,
+\item uniformly non-negative WEC$_{\min}$ on the sampled slices,
+\item uniformly positive SEC throughout the sampled shell regions,
+\item a strong visible transient in the main optimization run,
+\item a narrative in which the visible curves are dominated by a large drop in physics loss.
+\end{itemize}
+
+\section*{Editorial Principle}
+The revised manuscript follows a simple principle: when the cleaned pipeline and the direct
+manuscript-parameter evaluations support a weaker claim than the older wording suggested, the paper
+now adopts the weaker but reproducible statement.
+
+\end{document}

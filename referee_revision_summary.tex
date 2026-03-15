@@ -1,0 +1,65 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\title{Concise Summary of the Manuscript Revisions}
+\author{}
+\date{March 15, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Overview}
+The manuscript was revised to align its wording with regenerated evidence obtained from the cleaned,
+auditable optimization pipeline. The revisions do not change the basic analytic construction of the
+paper. Instead, they narrow several claims so that the text matches what the reproducible numerical
+workflow now supports.
+
+\section*{What Was Preserved}
+The following points remain central to the paper:
+\begin{itemize}
+\item the work is a differentiable, physics-penalized optimization over a structured analytic ansatz,
+\item the construction preserves non-negative seed energy density under the restricted uniform,
+time-independent translations studied here,
+\item the remaining obstruction is stress-dominated rather than density-dominated,
+\item the double-shell geometry remains more constrained than the single-shell one,
+\item the DEC remains the tightest residual condition in the regenerated examples.
+\end{itemize}
+
+\section*{What Was Softened}
+The revised manuscript now avoids stronger formulations that were not supported by the regenerated
+bundles or by direct evaluations of the manuscript target parameters. In particular, we no longer
+state that:
+\begin{itemize}
+\item the NEC or WEC reach a high-success regime,
+\item the sampled SEC slices are uniformly positive,
+\item the visible main optimization run shows a large transient before plateauing,
+\item the visible training dynamics are best described as a strong drop in physics loss.
+\end{itemize}
+
+\section*{Why the Changes Were Necessary}
+After regenerating the single-shell and double-shell cases with the cleaned pipeline, and after
+evaluating the manuscript parameter targets under the same diagnostics, the evidence consistently
+showed the same qualitative hierarchy:
+\begin{itemize}
+\item $\rho$ remains non-negative by construction in the restricted setup considered,
+\item the DEC is the hardest residual test,
+\item the SEC is milder than the DEC in aggregate,
+\item the NEC/WEC remain substantially constrained rather than nearly saturated.
+\end{itemize}
+
+The revised wording therefore reflects a deliberate effort to distinguish between the paper's
+constructive analytic contribution and stronger energy-condition claims that the regenerated
+numerical evidence does not justify.
+
+\section*{Resulting Editorial Position}
+The manuscript now presents a more limited but more defensible claim: selective warping of
+positive-energy static seeds can be combined with reproducible constrained optimization so that the
+remaining deficits are localized and stress-dominated, even though full pointwise energy-condition
+satisfaction is not established.
+
+\end{document}
