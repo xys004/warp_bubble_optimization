@@ -304,6 +304,52 @@ All field-map filenames use the revised manuscript language:
 
 This distinction is intentional. All quantitative claims in the manuscript should be read from the unsmoothed diagnostics (`success_rates.csv`, `losses.csv`, `final_params.csv`, and raw rebuilt fields). The `old-paper` preset exists only to improve figure readability and does not feed back into the optimization or into any reported percentages/margins.
 
+### Mathematica Final Rendering
+
+If the manuscript-facing Python PNGs are still not visually satisfactory, the
+recommended fallback is to keep Python as the audited source of truth and use
+Mathematica only as the final renderer.
+
+The repository now includes:
+
+- `export_mathematica_plane_maps.py`: rebuilds XY/XZ diagnostic planes from the
+  cleaned bundle and exports them as Mathematica-friendly JSON grids.
+- `render_mathematica_plane_maps.wl`: a Wolfram Language renderer that imports
+  those JSON files and creates clean `ListDensityPlot` manuscript panels with a
+  five-stop diverging palette similar to the original draft notebooks.
+
+Typical workflow:
+
+```bash
+python export_mathematica_plane_maps.py \
+  --base manuscript_target_bundles/domain_2_v_0p1_t_30p0 \
+  --outdir mathematica_exports \
+  --planes XY XZ \
+  --plane-n 700
+```
+
+This writes a bundle-specific export directory containing:
+
+- `manifest.json`
+- one JSON file per plane/field combination
+- conservative display-limit hints for Mathematica
+
+You can then render those files either from the Mathematica front end or with
+WolframScript:
+
+```bash
+wolframscript -file render_mathematica_plane_maps.wl -- \
+  --input-dir mathematica_exports/domain_2_v_0p1_t_30p0_a1p848_b1p135_R01p292 \
+  --output-dir mathematica_exports/domain_2_v_0p1_t_30p0_a1p848_b1p135_R01p292/rendered \
+  --image-size 420 \
+  --plot-min -2.6 \
+  --plot-max 2.6
+```
+
+Important: this Mathematica path is presentation-only. The paper's success
+fractions, margins, and optimization diagnostics must still be quoted from the
+Python-exported raw bundle data.
+
 ## Reproducibility Notes
 
 ### Origin of the Code
