@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Selective Warping of Positive-Energy-Density Seeds via Differentiable Constrained Optimization"
+type: software
+authors:
+  - family-names: "Bolívar"
+    given-names: "Nelson"
+    affiliation: "Universidad Central de Venezuela; Astrum Drive"
+  - family-names: "Abellán"
+    given-names: "G."
+    affiliation: "Universidad Central de Venezuela; Astrum Drive"
+  - family-names: "Vasilev"
+    given-names: "I."
+    affiliation: "Astrum Drive"
+license: MIT
+repository-code: "https://github.com/AstrumDrive/warp_bubble_optimization"
+doi: "10.5281/zenodo.19204010"
+keywords:
+  - warp drive
+  - general relativity
+  - energy conditions
+  - differentiable optimization
+  - reproducibility

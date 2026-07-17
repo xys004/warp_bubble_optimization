@@ -3,16 +3,16 @@
   "description": "Public release of the cleaned optimization, diagnostics, plotting, and verification workflow used for the revised warp-drive energy-condition study. The release is intended to support code and data reproducibility for journal review and includes regenerated golden bundles plus direct manuscript-target evaluations.",
   "creators": [
     {
-      "name": "Bolivar, Nelson",
-      "affiliation": "Universidad Central de Venezuela; Astrum Drive Technologies"
+      "name": "Bolívar, Nelson",
+      "affiliation": "Universidad Central de Venezuela; Astrum Drive"
     },
     {
-      "name": "Abellan, G.",
-      "affiliation": "Universidad Central de Venezuela; Astrum Drive Technologies"
+      "name": "Abellán, G.",
+      "affiliation": "Universidad Central de Venezuela; Astrum Drive"
     },
     {
       "name": "Vasilev, I.",
-      "affiliation": "Astrum Drive Technologies"
+      "affiliation": "Astrum Drive"
     }
   ],
   "upload_type": "software",
@@ -24,5 +24,5 @@
     "differentiable optimization",
     "reproducibility"
   ],
-  "notes": "Update creators, affiliations, title, and related identifiers before the final Zenodo deposition. Add the final DOI back into CITATION.cff after the release is archived."
+  "notes": "Software led and uploaded by Nelson Bolívar (GitHub: xys004) as part of Astrum Drive. Repository: https://github.com/AstrumDrive/warp_bubble_optimization"
 }
